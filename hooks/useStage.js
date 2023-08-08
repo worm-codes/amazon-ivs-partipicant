@@ -13,7 +13,7 @@ import IVSBroadcastClient, {
   BASIC_LANDSCAPE,
 } from "amazon-ivs-web-broadcast";
 
-export default function useStage({ canvasRef }) {
+export default function useStage() {
   const [stageJoined, setStageJoined] = useState(false);
   const [participants, setParticipants] = useState(new Map());
   const [localParticipant, setLocalParticipant] = useState({});
@@ -132,7 +132,7 @@ export default function useStage({ canvasRef }) {
       const stage = new Stage(token, strategyRef.current);
       client.enableVideo();
       client.enableAudio();
-      client.attachPreview(canvasRef.current);
+      // client.attachPreview(canvasRef.current);
       stage.on(
         StageEvents.STAGE_CONNECTION_STATE_CHANGED,
         handleConnectionStateChange

@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import styles from "./page.module.css";
 import LocalMedia from "@/components/LocalMedia";
@@ -23,7 +24,7 @@ export default function Home() {
     <div>
       <canvas
         ref={canvasRef}
-        style="width: 100%"
+        style={{width: '100%'}}
       ></canvas>
       <div
         id="broadcast-preview"
