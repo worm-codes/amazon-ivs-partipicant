@@ -13,7 +13,7 @@ import IVSBroadcastClient, {
   BASIC_LANDSCAPE,
 } from "amazon-ivs-web-broadcast";
 
-export default function useStage(canvasRef = null) {
+export default function useStage(canvasRef = null, client = null) {
   const [stageJoined, setStageJoined] = useState(false);
   const [participants, setParticipants] = useState(new Map());
   const [localParticipant, setLocalParticipant] = useState({});
@@ -71,7 +71,9 @@ export default function useStage(canvasRef = null) {
       };
       setParticipants(new Map(participants.set(id, participant)));
     }
-    refreshVideoPositions();
+    if (client) {
+      refreshVideoPositions();
+    }
   };
 
   const handleMediaRemoved = (participantInfo, streams) => {
@@ -87,7 +89,9 @@ export default function useStage(canvasRef = null) {
       participant = { ...participant, streams: newStreams };
       setParticipants(new Map(participants.set(id, participant)));
     }
-    refreshVideoPositions();
+    if (client) {
+      refreshVideoPositions();
+    }
   };
 
   const handleParticipantMuteChange = (participantInfo, stream) => {
@@ -124,16 +128,20 @@ export default function useStage(canvasRef = null) {
   // };
 
   async function joinStage(token) {
+    console.log(token);
     if (!token) {
       alert("Please enter a token to join a stage");
       return;
     }
     try {
       const stage = new Stage(token, strategyRef.current);
-      client.enableVideo();
-      client.enableAudio();
-      if (canvasRef.current) {
-        client.attachPreview(canvasRef.current);
+      if (client) {
+        console.log("client", client);
+        client.enableVideo();
+        client.enableAudio();
+        if (canvasRef.current) {
+          client.attachPreview(canvasRef.current);
+        }
       }
 
       stage.on(

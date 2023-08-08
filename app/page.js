@@ -22,7 +22,7 @@ export default function Home() {
   console.log("streamConfig", streamConfig);
   console.log("client", client);
   const { stageJoined, participants, localParticipant, stageRef, strategyRef } =
-    useStage(canvasRef);
+    useStage(canvasRef, client);
 
   return (
     <div>
