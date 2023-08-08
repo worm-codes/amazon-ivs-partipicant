@@ -13,7 +13,7 @@ import IVSBroadcastClient, {
   BASIC_LANDSCAPE,
 } from "amazon-ivs-web-broadcast";
 
-export default function useStage() {
+export default function useStage(canvasRef = null) {
   const [stageJoined, setStageJoined] = useState(false);
   const [participants, setParticipants] = useState(new Map());
   const [localParticipant, setLocalParticipant] = useState({});
@@ -25,6 +25,14 @@ export default function useStage() {
     new Strategy(currentAudioDevice, currentVideoDevice)
   );
 
+  const refreshVideoPositions = () =>
+    participants.forEach((participant, index) =>
+      client.updateVideoDeviceComposition(`video-${participant.id}`, {
+        index: 0,
+        width: streamConfig.maxResolution.width / participants.length,
+        x: index * (streamConfig.maxResolution.width / participants.length),
+      })
+    );
 
   useEffect(() => {
     strategyRef.current.updateMedia(currentAudioDevice, currentVideoDevice);
@@ -115,14 +123,6 @@ export default function useStage() {
   //   broadcastClient.current.addImageSource(bgImage, "bg-image", { index: 0 });
   // };
 
-  const refreshVideoPositions = () =>
-    participants.forEach((participant, index) =>
-      client.updateVideoDeviceComposition(`video-${participant.id}`, {
-        index: 0,
-        width: streamConfig.maxResolution.width / participants.length,
-        x: index * (streamConfig.maxResolution.width / participants.length),
-      })
-    );
   async function joinStage(token) {
     if (!token) {
       alert("Please enter a token to join a stage");
@@ -132,7 +132,10 @@ export default function useStage() {
       const stage = new Stage(token, strategyRef.current);
       client.enableVideo();
       client.enableAudio();
-      // client.attachPreview(canvasRef.current);
+      if (canvasRef.current) {
+        client.attachPreview(canvasRef.current);
+      }
+
       stage.on(
         StageEvents.STAGE_CONNECTION_STATE_CHANGED,
         handleConnectionStateChange

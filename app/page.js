@@ -4,7 +4,8 @@ import styles from "./page.module.css";
 import LocalMedia from "@/components/LocalMedia";
 import StageParticipants from "@/components/StageParticipant";
 import MediaControls from "@/components/MediaControls";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
+import useStage from "@/hooks/useStage";
 
 import IVSBroadcastClient from "amazon-ivs-web-broadcast";
 
@@ -20,11 +21,14 @@ export default function Home() {
   const streamConfig = IVSBroadcastClient.BASIC_LANDSCAPE;
   console.log("streamConfig", streamConfig);
   console.log("client", client);
+  const { stageJoined, participants, localParticipant, stageRef, strategyRef } =
+    useStage(canvasRef);
+
   return (
     <div>
       <canvas
         ref={canvasRef}
-        style={{width: '100%'}}
+        style={{ width: "100%" }}
       ></canvas>
       <div
         id="broadcast-preview"

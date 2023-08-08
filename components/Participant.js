@@ -11,6 +11,7 @@ export default function Participant({
   audioMuted,
   streams,
 }) {
+  console.log(id);
   const videoStream = streams.find(
     (stream) => stream.streamType === StreamType.VIDEO
   );
