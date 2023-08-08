@@ -9,6 +9,7 @@ import { StageContext } from "../contexts/StageContext.js";
 import { useLocalMedia } from "../hooks/useLocalMedia";
 
 export default function LocalMedia() {
+  // This is for development purposes. It checks to see if we have a valid token saved in the session storage
   const cachedStageToken = sessionStorage.getItem("stage-token");
   const cachedScreenshareStageToken = sessionStorage.getItem(
     "stage-screenshare-token"

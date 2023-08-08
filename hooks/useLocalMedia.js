@@ -31,7 +31,9 @@ export function useLocalMedia() {
       console.warn("tried to set local media with a null track");
       return;
     }
-    const stream = new LocalStageStream(track);
+    const stream = new LocalStageStream(track, {
+      simulcast: { enabled: true },
+    });
     if (stream.streamType === StreamType.VIDEO) {
       setLocalVideo(stream);
     } else {

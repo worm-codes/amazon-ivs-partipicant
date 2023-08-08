@@ -8,12 +8,8 @@ import {
   StageEvents,
   SubscribeType,
 } from "amazon-ivs-web-broadcast";
-import IVSBroadcastClient, {
-  Errors,
-  BASIC_LANDSCAPE,
-} from "amazon-ivs-web-broadcast";
 
-export default function useStage(canvasRef = null, client = null) {
+export default function useStage() {
   const [stageJoined, setStageJoined] = useState(false);
   const [participants, setParticipants] = useState(new Map());
   const [localParticipant, setLocalParticipant] = useState({});
@@ -24,15 +20,6 @@ export default function useStage(canvasRef = null, client = null) {
   const strategyRef = useRef(
     new Strategy(currentAudioDevice, currentVideoDevice)
   );
-
-  const refreshVideoPositions = () =>
-    participants.forEach((participant, index) =>
-      client.updateVideoDeviceComposition(`video-${participant.id}`, {
-        index: 0,
-        width: streamConfig.maxResolution.width / participants.length,
-        x: index * (streamConfig.maxResolution.width / participants.length),
-      })
-    );
 
   useEffect(() => {
     strategyRef.current.updateMedia(currentAudioDevice, currentVideoDevice);
@@ -71,9 +58,6 @@ export default function useStage(canvasRef = null, client = null) {
       };
       setParticipants(new Map(participants.set(id, participant)));
     }
-    if (client) {
-      refreshVideoPositions();
-    }
   };
 
   const handleMediaRemoved = (participantInfo, streams) => {
@@ -89,9 +73,6 @@ export default function useStage(canvasRef = null, client = null) {
       participant = { ...participant, streams: newStreams };
       setParticipants(new Map(participants.set(id, participant)));
     }
-    if (client) {
-      refreshVideoPositions();
-    }
   };
 
   const handleParticipantMuteChange = (participantInfo, stream) => {
@@ -103,7 +84,7 @@ export default function useStage(canvasRef = null, client = null) {
     }
   };
 
-  const handleConnectionStateChange = async (state) => {
+  const handleConnectionStateChange = (state) => {
     if (state === StageConnectionState.CONNECTED) {
       setStageJoined(true);
     } else if (state === StageConnectionState.DISCONNECTED) {
@@ -117,33 +98,13 @@ export default function useStage(canvasRef = null, client = null) {
     }
   }
 
-  // const initBroadcastClient = async () => {
-
-  //   const previewEl = document.getElementById("broadcast-preview");
-  //   broadcastClient.current.attachPreview(previewEl);
-
-  //   const bgImage = new Image();
-  //   bgImage.src = "/images/video-image.png";
-  //   broadcastClient.current.addImageSource(bgImage, "bg-image", { index: 0 });
-  // };
-
   async function joinStage(token) {
-    console.log(token);
     if (!token) {
       alert("Please enter a token to join a stage");
       return;
     }
     try {
       const stage = new Stage(token, strategyRef.current);
-      if (client) {
-        console.log("client", client);
-        client.enableVideo();
-        client.enableAudio();
-        if (canvasRef.current) {
-          client.attachPreview(canvasRef.current);
-        }
-      }
-
       stage.on(
         StageEvents.STAGE_CONNECTION_STATE_CHANGED,
         handleConnectionStateChange
